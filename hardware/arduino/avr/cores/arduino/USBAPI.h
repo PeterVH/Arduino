@@ -215,7 +215,7 @@ extern Keyboard_ Keyboard;
 //================================================================================
 //	Low level API
 
-typedef struct
+struct Setup
 {
 	uint8_t bmRequestType;
 	uint8_t bRequest;
@@ -223,7 +223,7 @@ typedef struct
 	uint8_t wValueH;
 	uint16_t wIndex;
 	uint16_t wLength;
-} Setup;
+};
 
 //================================================================================
 //================================================================================
