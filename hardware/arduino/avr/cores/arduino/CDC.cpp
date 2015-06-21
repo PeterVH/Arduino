@@ -31,6 +31,8 @@ typedef struct
 	u8	lineState;
 } LineInfo;
 
+static bool (*on_cdc_setup_packet)(const Setup&) = NULL;
+
 static volatile LineInfo _usbLineInfo = { 57600, 0x00, 0x00, 0x00, 0x00 };
 
 #define WEAK __attribute__ ((weak))
@@ -62,6 +64,8 @@ int WEAK CDC_GetInterface(u8* interfaceNum)
 
 bool WEAK CDC_Setup(Setup& setup)
 {
+	bool result = false;
+
 	u8 r = setup.bRequest;
 	u8 requestType = setup.bmRequestType;
 
@@ -70,7 +74,7 @@ bool WEAK CDC_Setup(Setup& setup)
 		if (CDC_GET_LINE_CODING == r)
 		{
 			USB_SendControl(0,(void*)&_usbLineInfo,7);
-			return true;
+			result = true;
 		}
 	}
 
@@ -111,9 +115,14 @@ bool WEAK CDC_Setup(Setup& setup)
 				*(uint16_t *)0x0800 = 0x0;
 			}
 		}
-		return true;
+		result = true;
 	}
-	return false;
+
+	// Call callback to allow sketch to do additional processing
+	if (on_cdc_setup_packet)
+		return on_cdc_setup_packet(setup) || result;
+	else
+		return result;
 }
 
 
@@ -227,6 +236,10 @@ bool Serial_::dtr() {
 
 bool Serial_::rts() {
 	return _usbLineInfo.lineState & 0x2;
+}
+
+void Serial_::onUsbSetupPacket(bool (*func)(const Setup&)) {
+	on_cdc_setup_packet = func;
 }
 
 Serial_ Serial;

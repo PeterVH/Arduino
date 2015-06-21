@@ -70,6 +70,9 @@ struct ring_buffer;
 #error Please lower the CDC Buffer size
 #endif
 
+// Forward declaration so we can take a reference below:
+struct Setup;
+
 class Serial_ : public Stream
 {
 private:
@@ -115,6 +118,13 @@ public:
 		SPACE_PARITY = 4,
 	};
 
+	// This allows setting a callback for every USB setup packet
+	// received (called after regular processing). If the callback
+	// returns true, the packet will be acknowledged. If the
+	// callback returns false, the regular handling determines the
+	// result. Note that the callback will run in ISR context, so it
+	// should be short and not block.
+	void onUsbSetupPacket(bool (*func)(const Setup&));
 };
 extern Serial_ Serial;
 
