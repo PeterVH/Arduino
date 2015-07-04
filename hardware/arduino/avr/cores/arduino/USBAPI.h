@@ -99,7 +99,7 @@ public:
 	// These return the settings specified by the USB host for the
 	// serial port. These aren't really used, but are offered here
 	// in case a sketch wants to act on these settings.
-	unsigned long baudrate();
+	unsigned long baud();
 	uint8_t stopbits();
 	uint8_t parity();
 	uint8_t databits();

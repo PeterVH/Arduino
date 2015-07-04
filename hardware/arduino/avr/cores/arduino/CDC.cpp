@@ -214,7 +214,7 @@ Serial_::operator bool() {
 	return result;
 }
 
-unsigned long Serial_::baudrate() {
+unsigned long Serial_::baud() {
 	return _usbLineInfo.dwDTERate;
 }
 
